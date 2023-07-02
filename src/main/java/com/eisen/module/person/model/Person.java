@@ -20,6 +20,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
@@ -41,8 +43,13 @@ public class Person extends PanacheEntity {
     @JsonIgnore
     public String passwordHash;
 
-    @ManyToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.EAGER)
-    public List<Role> roles;
+    @JoinTable(
+        name = "Person_Role", 
+        joinColumns = { @JoinColumn(name = "person_id") }, 
+        inverseJoinColumns = { @JoinColumn(name = "role_id") }
+    )
+    @ManyToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
+    public Set<Role> roles;
 
     @OneToMany
     @JsonIgnore

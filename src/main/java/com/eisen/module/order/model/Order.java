@@ -2,10 +2,25 @@ package com.eisen.module.order.model;
 
 import java.util.List;
 
-import com.eisen.module.person.model.Person;
-import com.eisen.module.product.model.Product;
-
 public class Order {
+    public static class Person {
+        public Long id;
+
+        public Person(Long id) {
+            this.id = id;
+        }
+    }
+    public static class Product {
+        public Long id;
+        public String name;
+        public Long priceInCents;
+
+        public Product(Long id, String name, Long priceInCents) {
+            this.id = id;
+            this.name = name;
+            this.priceInCents = priceInCents;
+        }
+    }
     private Person person;
     private List<Product> products;
 

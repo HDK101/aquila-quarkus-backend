@@ -1,11 +1,13 @@
 package com.eisen;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.server.spi.ServerRequestContext;
 
 import com.eisen.module.person.model.Person;
+import com.eisen.module.person.model.Role;
 import com.eisen.module.person.service.LoggedPersonService;
 
 import io.quarkus.resteasy.reactive.server.runtime.ResteasyReactiveSecurityContext;
@@ -19,6 +21,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.interceptor.InvocationContext;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -32,20 +35,25 @@ import jakarta.ws.rs.core.SecurityContext;
 @ApplicationScoped
 @Path("/hello")
 public class GreetingResource {
-    @Inject
-    LoggedPersonService loggedPersonService;
+    // @Inject
+    // LoggedPersonService loggedPersonService;
 
     @ConfigProperty(name = "quarkus.profile")
     public String profile;
 
+    @Inject
+    EntityManager entityManager;
+
     @GET
-    @RolesAllowed({ "Walter" })
+    //@RolesAllowed({ "Walter" })
     @Produces(MediaType.APPLICATION_JSON)
 
     public String hello(@Context SecurityContext securityContext) {
-        Person person = loggedPersonService.authenticatedPerson();
+        //List<Role> role = Role.findAllByPerson(1L);
+        // System.out.println(role);
+        //Person person = loggedPersonService.authenticatedPerson();
 
-        System.out.println(person.name);
+        //System.out.println(person.name);
         return "{}";
     }
 }
