@@ -26,8 +26,4 @@ public class Role extends PanacheEntity {
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
     public Set<Person> persons;
-
-    public static List<Role> findAllByPerson(Long personId) {
-        return find("SELECT r FROM Role r JOIN Person_Role pr WHERE pr.person_id = ?1", personId).list();
-    }
 }
