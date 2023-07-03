@@ -40,8 +40,8 @@ public class PersonAccessTokenResource {
         Person person = loggedPersonService.authenticatedPerson();
         Session session = loggedPersonService.currentSession();
 
-        List<Role> roles = Role.findAllByPerson(person);
-        System.out.println(roles);
+        //List<Role> roles = Role.findAllByPerson(person);
+        //System.out.println(roles);
 
         String token = Jwt.issuer(issuer)
         .expiresIn(maxDuration)
