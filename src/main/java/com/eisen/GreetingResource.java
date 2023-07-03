@@ -50,7 +50,6 @@ public class GreetingResource {
 
     public String hello(@Context SecurityContext securityContext) {
         //List<Role> role = Role.findAllByPerson(1L);
-        // System.out.println(role);
         //Person person = loggedPersonService.authenticatedPerson();
 
         //System.out.println(person.name);
