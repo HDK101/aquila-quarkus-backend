@@ -6,7 +6,8 @@ create table if not exists persons (
     name varchar(255) not null,
     password_hash varchar(255) not null,
     phone varchar(255) not null,
-    primary key (id)
+    primary key (id),
+    constraint person_login_unique unique(login)
 );
 
 create sequence persons_SEQ start with 1 increment by 1;
