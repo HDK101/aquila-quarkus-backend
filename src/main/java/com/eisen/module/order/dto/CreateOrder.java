@@ -2,6 +2,9 @@ package com.eisen.module.order.dto;
 
 import java.util.List;
 
-public class CreateOrderBody {
+import jakarta.validation.constraints.NotNull;
+
+public class CreateOrder {
+    @NotNull
     public List<Long> foodIds;
 }

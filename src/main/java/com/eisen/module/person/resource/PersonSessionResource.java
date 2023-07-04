@@ -17,6 +17,7 @@ import io.smallrye.jwt.build.Jwt;
 import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -35,7 +36,7 @@ public class PersonSessionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public CreateSessionResponse store(CreateSession createSession) {
+    public CreateSessionResponse store(@Valid CreateSession createSession) {
         Person person = Person.findByEmail(createSession.login).orElseThrow(() -> { 
             throw new WrongPersonCredentialsException(400, "Credenciais incorretas");
         });

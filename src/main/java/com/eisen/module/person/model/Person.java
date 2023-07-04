@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -15,6 +17,7 @@ import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
+import jakarta.validation.constraints.NotNull;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
@@ -35,14 +38,19 @@ import jakarta.persistence.Transient;
 @Entity(name = "persons")
 @Table(name = "persons")
 public class Person extends PanacheEntity {
+    @NotNull
     @Column(nullable = false)
     public String name;
+    @NotNull
     @Column(nullable = false)
     public LocalDate birth;
+    @NotNull
     @Column(nullable = false, unique = true)
     public String login;
+    @NotNull
     @Column(nullable = false)
     public String email;
+    @NotNull
     @Column(nullable = false)
     public String phone;
     @Transient

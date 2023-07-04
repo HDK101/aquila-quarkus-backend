@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.bson.Document;
 
-import com.eisen.module.order.dto.CreateOrderBody;
+import com.eisen.module.order.dto.CreateOrder;
 import com.eisen.module.order.model.Order;
 import com.eisen.module.order.service.OrderService;
 import com.eisen.module.person.model.Person;
@@ -12,6 +12,7 @@ import com.eisen.module.product.model.Product;
 
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -29,7 +30,7 @@ public class OrderResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Document store(CreateOrderBody createOrderBody) {
+    public Document store(@Valid CreateOrder createOrderBody) {
         Person person = new Person();
         person.id = 1L;
 
