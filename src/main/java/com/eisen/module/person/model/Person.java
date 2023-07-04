@@ -1,9 +1,11 @@
 package com.eisen.module.person.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,6 +69,13 @@ public class Person extends PanacheEntity {
     public Person(String name, LocalDate birth) {
         this.name = name;
         this.birth = birth;
+    }
+
+    public Set<String> getSetOfRolesNameId() {
+        List<String> rolesList = roles.stream().map(i -> i.nameId).collect(Collectors.toList());
+        Set<String> rolesNamesId = new HashSet<>(rolesList);
+
+        return rolesNamesId;
     }
 
     public static Person findByName(String name) {

@@ -45,7 +45,7 @@ public class GreetingResource {
     EntityManager entityManager;
 
     @GET
-    //@RolesAllowed({ "Walter" })
+    @RolesAllowed({ "super_admin" })
     @Produces(MediaType.APPLICATION_JSON)
 
     public String hello(@Context SecurityContext securityContext) {

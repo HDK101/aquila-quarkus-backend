@@ -40,13 +40,10 @@ public class PersonAccessTokenResource {
         Person person = loggedPersonService.authenticatedPerson();
         Session session = loggedPersonService.currentSession();
 
-        //List<Role> roles = Role.findAllByPerson(person);
-        //System.out.println(roles);
-
         String token = Jwt.issuer(issuer)
         .expiresIn(maxDuration)
         .upn(person.email)
-        .groups(new HashSet<>(Arrays.asList("User", "Admin")))
+        .groups(person.getSetOfRolesNameId())
         .claim("sessionId", session.id)
         .claim("personId", person.id)
         .claim("access", true)
