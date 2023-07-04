@@ -13,13 +13,15 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 
-@Entity
+@Entity(name = "roles")
+@Table(name = "roles")
 public class Role extends PanacheEntity {
-    @Column(nullable = false, unique = true)
+    @Column(name = "name_display", nullable = false, unique = true)
     public String nameDisplay;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "name_id", nullable = false, unique = true)
     public String nameId;
 
 

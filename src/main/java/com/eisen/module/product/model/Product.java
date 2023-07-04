@@ -3,17 +3,22 @@ package com.eisen.module.product.model;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
-@Entity
+@Entity(name = "products")
+@Table(name = "products")
 public class Product extends PanacheEntity {
-    public Long id;
+    @Column(nullable = false)
     public String name;
+    @Column(nullable = false)
     public String description;
+    @Column(name = "price_in_cents", nullable = false)
     public Long priceInCents;
-
+    
+    @Column(name = "promotion_price_in_cents", nullable = false)
     public Long promotionPriceInCents;
 
-    @Column(unique = true)
+    @Column(name = "custom_id", unique = true)
     public Long customId;
 
     public Product() {
