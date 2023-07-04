@@ -5,4 +5,4 @@ create table if not exists roles (
     primary key (id)
 );
 
-create sequence roles_SEQ start with 1 increment by 50;
+create sequence if not exists roles_SEQ start with 1 increment by 1;

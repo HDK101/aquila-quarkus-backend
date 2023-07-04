@@ -9,4 +9,4 @@ create table if not exists persons (
     primary key (id)
 );
 
-create sequence persons_SEQ start with 1 increment by 50;
+create sequence persons_SEQ start with 1 increment by 1;
