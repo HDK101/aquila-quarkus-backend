@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
@@ -38,7 +39,7 @@ public class Person extends PanacheEntity {
     public String name;
     @Column(nullable = false)
     public LocalDate birth;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     public String login;
     @Column(nullable = false)
     public String email;
@@ -71,6 +72,28 @@ public class Person extends PanacheEntity {
         this.birth = birth;
     }
 
+    public void hashPassword() {
+        if (password != null) {
+            passwordHash = BcryptUtil.bcryptHash(password, 8);
+        }
+    }
+    
+    @Override
+    public void persist() {
+        System.out.println("hashing password lol");
+        hashPassword();
+        super.persist();
+    }
+
+    
+
+    @Override
+    public void persistAndFlush() {
+        System.out.println("hashing password lol flush");
+        hashPassword();
+        super.persistAndFlush();
+    }
+
     public Set<String> getSetOfRolesNameId() {
         List<String> rolesList = roles.stream().map(i -> i.nameId).collect(Collectors.toList());
         Set<String> rolesNamesId = new HashSet<>(rolesList);
@@ -91,4 +114,49 @@ public class Person extends PanacheEntity {
         return Optional.ofNullable(
                 find("login", login).firstResult());
     }
+
+    public Person name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public Person birth(LocalDate birth) {
+        this.birth = birth;
+        return this;
+    }
+
+    public Person login(String login) {
+        this.login = login;
+        return this;
+    }
+
+    public Person email(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public Person phone(String phone) {
+        this.phone = phone;
+        return this;
+    }
+
+    public Person password(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public Person passwordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+        return this;
+    }
+
+    public Person roles(Set<Role> roles) {
+        this.roles = roles;
+        return this;
+    }
+
+    public Person sessions(List<Session> sessions) {
+        this.sessions = sessions;
+        return this;
+    }    
 }

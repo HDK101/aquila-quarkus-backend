@@ -28,4 +28,8 @@ public class Role extends PanacheEntity {
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
     public Set<Person> persons;
+
+    public static Role findRoleByNameId(String nameId) {
+        return find("nameId", nameId).firstResult();
+    }
 }
