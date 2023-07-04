@@ -8,4 +8,4 @@ create table if not exists products (
     primary key (id)
 );
 
-create sequence products_SEQ start with 1 increment by 50;
+create sequence products_SEQ start with 1 increment by 1;
