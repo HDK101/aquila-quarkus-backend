@@ -26,32 +26,38 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-@Entity
+@Entity(name = "persons")
+@Table(name = "persons")
 public class Person extends PanacheEntity {
     @Column(nullable = false)
     public String name;
     @Column(nullable = false)
     public LocalDate birth;
     @Column(nullable = false)
+    public String login;
+    @Column(nullable = false)
     public String email;
+    @Column(nullable = false)
+    public String phone;
     @Transient
     @JsonProperty(access = Access.WRITE_ONLY)
     public String password;
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     @JsonIgnore
     public String passwordHash;
 
     @JoinTable(
-        name = "Person_Role", 
-        joinColumns = { @JoinColumn(name = "person_id") }, 
-        inverseJoinColumns = { @JoinColumn(name = "role_id") }
+        name = "person_role", 
+        joinColumns = { @JoinColumn(name = "person_id", nullable = false) }, 
+        inverseJoinColumns = { @JoinColumn(name = "role_id", nullable = false) }
     )
     @ManyToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY)
     public Set<Role> roles;
 
-    @OneToMany
+    @OneToMany(mappedBy = "person")
     @JsonIgnore
     public List<Session> sessions;
 
@@ -70,5 +76,10 @@ public class Person extends PanacheEntity {
     public static Optional<Person> findByEmail(String email) {
         return Optional.ofNullable(
                 find("email", email).firstResult());
+    }
+
+    public static Optional<Person> findByLogin(String login) {
+        return Optional.ofNullable(
+                find("login", login).firstResult());
     }
 }

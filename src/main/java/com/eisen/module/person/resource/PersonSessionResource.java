@@ -36,7 +36,7 @@ public class PersonSessionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public CreateSessionResponse store(CreateSession createSession) {
-        Person person = Person.findByEmail(createSession.email).orElseThrow(() -> { 
+        Person person = Person.findByEmail(createSession.login).orElseThrow(() -> { 
             throw new WrongPersonCredentialsException(400, "Credenciais incorretas");
         });
 
@@ -50,7 +50,7 @@ public class PersonSessionResource {
 
         String token = Jwt.issuer(issuer)
         .expiresIn(maxDuration)
-        .upn(createSession.email)
+        .upn(createSession.login)
         .claim("sessionId", session.id)
         .claim("personId", person.id)
         .claim("refresh", true)
