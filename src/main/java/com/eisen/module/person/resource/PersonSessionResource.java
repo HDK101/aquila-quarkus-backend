@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import java.util.List;
 
 import com.eisen.module.person.dto.CreateSession;
 import com.eisen.module.person.exception.WrongPersonCredentialsException;
@@ -14,7 +15,7 @@ import com.eisen.module.person.response.CreateSessionResponse;
 
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.smallrye.jwt.build.Jwt;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -52,6 +53,7 @@ public class PersonSessionResource {
         String token = Jwt.issuer(issuer)
         .expiresIn(maxDuration)
         .upn(createSession.login)
+        .groups(new HashSet<>(List.of("refresh")))
         .claim("sessionId", session.id)
         .claim("personId", person.id)
         .claim("refresh", true)

@@ -14,6 +14,8 @@ import com.eisen.module.person.response.AccessTokenResponse;
 import com.eisen.module.person.service.LoggedPersonService;
 
 import io.smallrye.jwt.build.Jwt;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -23,6 +25,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @ApplicationScoped
+@RolesAllowed({ "refresh" })
 @Path("/persons/sessions/access-token")
 public class PersonAccessTokenResource {
     @ConfigProperty(name = "mp.jwt.verify.issuer")
