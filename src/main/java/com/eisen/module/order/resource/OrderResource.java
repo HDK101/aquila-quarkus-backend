@@ -37,6 +37,7 @@ public class OrderResource {
     }
 
     @GET
+    @RolesAllowed({ "admin", "super_admin" })
     @Produces(MediaType.APPLICATION_JSON)
     public List<Order> index() {
         return orderService.all();
