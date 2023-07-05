@@ -1,5 +1,11 @@
 package com.eisen.module.product.model;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.eisen.module.product.exception.NotAllProductsFoundException;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,5 +33,20 @@ public class Product extends PanacheEntity {
     public Long customId;
 
     public Product() {
-    }    
+    }
+
+    public static List<Product> findIn(List<Long> ids) {
+        List<Product> products = find("where id in (?1)", ids).list();
+
+        if (products.size() != ids.size()) {
+            List<Long> notFoundProductIds = products.stream().filter(product -> ids.contains(product.id)).map(product -> product.id).collect(Collectors.toList());
+            throw new NotAllProductsFoundException(notFoundProductIds, "Not all products were found by the IDs given");
+        }
+
+        return products;
+    }
+
+    public static Map<Long, Product> findInRetrieveMap(List<Long> ids) {
+        return null;
+    }
 }
