@@ -1,5 +1,6 @@
 package com.eisen.module.product.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,6 +48,14 @@ public class Product extends PanacheEntity {
     }
 
     public static Map<Long, Product> findInRetrieveMap(List<Long> ids) {
-        return null;
+        List<Product> products = findIn(ids);
+        
+        HashMap<Long, Product> productMap = new HashMap<>();
+
+        products.forEach(product -> {
+            productMap.put(product.id, product);
+        });
+
+        return productMap;
     }
 }

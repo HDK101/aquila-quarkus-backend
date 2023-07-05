@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
+import com.eisen.common.util.Pair;
 import com.eisen.module.order.dto.CreateOrder;
 import com.eisen.module.order.exception.CreateOrderJsonException;
 import com.eisen.module.order.model.Order;
@@ -33,25 +34,13 @@ public class OrderService {
     @Inject
     LoggedPersonService loggedPersonService;
 
-    public Document create(List<CreateOrder.ProductSelection> productSelections) {
-        Person person = loggedPersonService.authenticatedPerson();
-        List<Long> productIds = productSelections.stream().map(productSelection -> productSelection.foodId)
+    private List<Long> retrieveIdsFromProductionSelects(List<CreateOrder.ProductSelection> productSelections) {
+        return productSelections.stream().map(productSelection -> productSelection.foodId)
                 .collect(Collectors.toList());
-        List<Product> products = Product.findIn(productIds);
-        Order.Person oPerson = new Order.Person(person.id);
+    }
 
-        Map<Long, Order.Product> orderProductMap = new HashMap<>();
-
-        List<Order.Product> oProducts = new ArrayList<>();
-
-        productSelections.forEach(product -> {
-            orderProductMap.put(product.id, new Order.Product(product.id, product.name, product.customId, 1L));
-        });
-
-        Order order = new Order(oPerson, oProducts);
-
+    private Document writeOrderToDatabase(Order order) {
         try {
-
             Document document = Document.parse(mapper.writeValueAsString(order));
 
             mongoClient.getDatabase("aquila").getCollection("orders").insertOne(document);
@@ -61,6 +50,31 @@ public class OrderService {
             System.out.println(ex.getMessage());
             return null;
         }
+    }
+
+    private List<Order.ProductJsonRepresentation> createRepresentationOfProducts(List<CreateOrder.ProductSelection> productSelections, Map<Long, Product> products) {
+        List<Order.ProductJsonRepresentation> oProducts = new ArrayList<>();
+
+        productSelections.forEach((productSelection) -> {
+            Product product = products.get(productSelection.foodId);
+            Order.ProductJsonRepresentation oProduct = Order.ProductJsonRepresentation.of(product, productSelection.quantity);
+            oProducts.add(oProduct);
+        });
+
+        return oProducts;
+    }
+
+    public Document create(List<CreateOrder.ProductSelection> productSelections) {
+        Person person = loggedPersonService.authenticatedPerson();
+        List<Long> productIds = retrieveIdsFromProductionSelects(productSelections);
+        Map<Long, Product> products = Product.findInRetrieveMap(productIds);
+
+        Order.PersonDocumentRepresentation oPerson = Order.PersonDocumentRepresentation.of(person);
+        List<Order.ProductJsonRepresentation> oProducts = createRepresentationOfProducts(productSelections, products);
+
+        Order order = new Order(oPerson, oProducts);
+
+        return writeOrderToDatabase(order);
     }
 
     public List<Order> all() {
@@ -78,14 +92,18 @@ public class OrderService {
                 orders.add(order);
             }
         } catch (JsonProcessingException ex) {
-            CreateOrderJsonException createOrderJsonException = new CreateOrderJsonException(500, ex.getMessage(),
-                    ex.getStackTrace());
-            createOrderJsonException.setStackTrace(ex.getStackTrace());
-
-            throw createOrderJsonException;
+            throwCreateOrderJsonException(ex);
         } finally {
             cursor.close();
         }
         return orders;
+    }
+
+    private void throwCreateOrderJsonException(JsonProcessingException exception) {
+        CreateOrderJsonException createOrderJsonException = new CreateOrderJsonException(500, exception.getMessage(),
+        exception.getStackTrace());
+        createOrderJsonException.setStackTrace(exception.getStackTrace());
+
+        throw createOrderJsonException;
     }
 }
