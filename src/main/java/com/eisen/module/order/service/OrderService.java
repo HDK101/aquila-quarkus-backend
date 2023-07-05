@@ -1,18 +1,24 @@
 package com.eisen.module.order.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 
+import com.eisen.module.order.dto.CreateOrder;
+import com.eisen.module.order.exception.CreateOrderJsonException;
 import com.eisen.module.order.model.Order;
 import com.eisen.module.person.model.Person;
+import com.eisen.module.person.service.LoggedPersonService;
 import com.eisen.module.product.model.Product;
-import com.mongodb.client.FindIterable;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCursor;
 
-import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -21,30 +27,40 @@ public class OrderService {
     @Inject
     MongoClient mongoClient;
 
-    public Document create(Person person, List<Product> products) {
-        Document clientDocument = new Document().append("id", person.id);
-        Document productsDocument = new Document();
+    @Inject
+    ObjectMapper mapper;
 
-        products.forEach(product -> {
-            Document productDocument = new Document();
-            productDocument.append("id", product.id);
-            productDocument.append("name", product.name);
+    @Inject
+    LoggedPersonService loggedPersonService;
 
-            if (product.promotionPriceInCents != null) {
-                productDocument.append("priceInCents", product.priceInCents);
-            }
-            else {
-                productDocument.append("priceInCents", product.promotionPriceInCents);
-            }
+    public Document create(List<CreateOrder.ProductSelection> productSelections) {
+        Person person = loggedPersonService.authenticatedPerson();
+        List<Long> productIds = productSelections.stream().map(productSelection -> productSelection.foodId)
+                .collect(Collectors.toList());
+        List<Product> products = Product.findIn(productIds);
+        Order.Person oPerson = new Order.Person(person.id);
+
+        Map<Long, Order.Product> orderProductMap = new HashMap<>();
+
+        List<Order.Product> oProducts = new ArrayList<>();
+
+        productSelections.forEach(product -> {
+            orderProductMap.put(product.id, new Order.Product(product.id, product.name, product.customId, 1L));
         });
 
-        Document document = new Document()
-            .append("client", clientDocument)
-            .append("products", productsDocument);
+        Order order = new Order(oPerson, oProducts);
 
-        mongoClient.getDatabase("aquila").getCollection("orders").insertOne(document);
+        try {
 
-        return document;
+            Document document = Document.parse(mapper.writeValueAsString(order));
+
+            mongoClient.getDatabase("aquila").getCollection("orders").insertOne(document);
+
+            return document;
+        } catch (JsonProcessingException ex) {
+            System.out.println(ex.getMessage());
+            return null;
+        }
     }
 
     public List<Order> all() {
@@ -55,15 +71,18 @@ public class OrderService {
         try {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
-                Order order = new Order();
 
-                Document clientDocument = (Document)document.get("client");
-                System.out.println(clientDocument.getLong("id"));
+                document.toJson();
 
-                order.setPerson(new Order.Person(document.getLong("client.id")));
-
+                Order order = mapper.readValue(document.toJson(), Order.class);
                 orders.add(order);
             }
+        } catch (JsonProcessingException ex) {
+            CreateOrderJsonException createOrderJsonException = new CreateOrderJsonException(500, ex.getMessage(),
+                    ex.getStackTrace());
+            createOrderJsonException.setStackTrace(ex.getStackTrace());
+
+            throw createOrderJsonException;
         } finally {
             cursor.close();
         }
