@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
+import com.eisen.common.provider.MongoWrapper;
 import com.eisen.common.util.Pair;
 import com.eisen.module.order.dto.CreateOrder;
 import com.eisen.module.order.exception.CreateOrderJsonException;
@@ -25,8 +26,10 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class OrderService {
+    private static final String ORDERS_COLLECTION = "orders";
+
     @Inject
-    MongoClient mongoClient;
+    MongoWrapper mongoWrapper;
 
     @Inject
     ObjectMapper mapper;
@@ -43,13 +46,13 @@ public class OrderService {
         try {
             Document document = Document.parse(mapper.writeValueAsString(order));
 
-            mongoClient.getDatabase("aquila").getCollection("orders").insertOne(document);
+            mongoWrapper.insertOneToCollection(ORDERS_COLLECTION, order);
 
             return document;
         } catch (JsonProcessingException ex) {
-            System.out.println(ex.getMessage());
-            return null;
+            throwCreateOrderJsonException(ex);
         }
+        return null;
     }
 
     private List<Order.ProductJsonRepresentation> createRepresentationOfProducts(List<CreateOrder.ProductSelection> productSelections, Map<Long, Product> products) {
@@ -78,25 +81,13 @@ public class OrderService {
     }
 
     public List<Order> all() {
-        MongoCursor<Document> cursor = mongoClient.getDatabase("aquila").getCollection("orders").find().iterator();
-
-        List<Order> orders = new ArrayList<>();
-
         try {
-            while (cursor.hasNext()) {
-                Document document = cursor.next();
-
-                document.toJson();
-
-                Order order = mapper.readValue(document.toJson(), Order.class);
-                orders.add(order);
-            }
+            List<Order> orders = mongoWrapper.collectionMapTo(ORDERS_COLLECTION, Order.class);
+            return orders;
         } catch (JsonProcessingException ex) {
             throwCreateOrderJsonException(ex);
-        } finally {
-            cursor.close();
         }
-        return orders;
+        return null;
     }
 
     private void throwCreateOrderJsonException(JsonProcessingException exception) {
