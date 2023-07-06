@@ -12,6 +12,7 @@ import com.eisen.module.product.model.Product;
 
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -21,17 +22,18 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+@ApplicationScoped
 @Path("/orders")
-@RolesAllowed({ "client", "admin", "super_admin" })
 public class OrderResource {
     @Inject
     SecurityIdentity securityIdentity;
     @Inject
     OrderService orderService;
-
+    
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "client" })
     public Document store(@Valid CreateOrder createOrderBody) {
         return orderService.create(createOrderBody.productIds);
     }

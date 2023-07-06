@@ -37,6 +37,7 @@ public class PersonAccessTokenResource {
     LoggedPersonService loggedPersonService;
 
     @POST
+    @RolesAllowed({ "user" })
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AccessTokenResponse accessToken() {
