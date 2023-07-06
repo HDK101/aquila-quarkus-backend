@@ -34,13 +34,13 @@ public class Session extends PanacheEntity{
         return find("WHERE person_id = ?1", personId).list();
     }
 
-    public static void destroyByPersonAndSessionId(Long personId, Long sessionId) {
-        Long entitiesDeleted = delete("WHERE id = ?2 AND person_id = ?1", personId, sessionId);
+    public static void destroyWithPersonId(Long sessionId, Long personId) {
+        Long entitiesDeleted = delete("id = ?1 and person.id = ?2", sessionId, personId);
 
         if (entitiesDeleted == 0) throw new SessionNotFoundException("Session not found");
     }
 
     public static Long destroyAllByPersonId(Long personId) {
-        return delete("WHERE person_id = ?1", personId);
+        return delete("person.id = ?1", personId);
     }
 }

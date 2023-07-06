@@ -54,7 +54,7 @@ public class PersonSessionDestroyResource {
     @Path("/{id}")
     public Response destroy(@RestPath Long id) {
         Long personId = loggedPersonService.authenticatedPerson().id;
-        Session.destroyByPersonAndSessionId(personId, id);
+        Session.destroyWithPersonId(id, personId);
 
         return Response.status(Status.NO_CONTENT).build();
     }
