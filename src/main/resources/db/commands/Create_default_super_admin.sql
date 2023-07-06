@@ -16,3 +16,27 @@ INSERT INTO person_role(
     LASTVAL(persons_SEQ),
     (SELECT id FROM roles r WHERE r.name_id = "super_admin")
 );
+
+INSERT INTO person_role(
+    person_id,
+    role_id
+) VALUES (
+    LASTVAL(persons_SEQ),
+    (SELECT id FROM roles r WHERE r.name_id = "admin")
+);
+
+INSERT INTO person_role(
+    person_id,
+    role_id
+) VALUES (
+    LASTVAL(persons_SEQ),
+    (SELECT id FROM roles r WHERE r.name_id = "client")
+);
+
+INSERT INTO person_role(
+    person_id,
+    role_id
+) VALUES (
+    LASTVAL(persons_SEQ),
+    (SELECT id FROM roles r WHERE r.name_id = "user")
+);
