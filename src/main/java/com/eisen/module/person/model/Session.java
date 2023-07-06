@@ -1,5 +1,8 @@
 package com.eisen.module.person.model;
 
+import java.util.List;
+
+import com.eisen.module.person.exception.SessionNotFoundException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
@@ -25,5 +28,19 @@ public class Session extends PanacheEntity{
 
     public Session(Person person) {
         this.person = person;
+    }
+
+    public static List<Session> findByPersonId(Long personId) {
+        return find("WHERE person_id = ?1", personId).list();
+    }
+
+    public static void destroyByPersonAndSessionId(Long personId, Long sessionId) {
+        Long entitiesDeleted = delete("WHERE id = ?2 AND person_id = ?1", personId, sessionId);
+
+        if (entitiesDeleted == 0) throw new SessionNotFoundException("Session not found");
+    }
+
+    public static Long destroyAllByPersonId(Long personId) {
+        return delete("WHERE person_id = ?1", personId);
     }
 }
