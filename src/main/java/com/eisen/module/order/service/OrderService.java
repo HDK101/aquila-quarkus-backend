@@ -4,18 +4,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
+import com.eisen.common.exception.JsonInternalErrorException;
 import com.eisen.common.provider.MongoWrapper;
 import com.eisen.common.util.Pair;
 import com.eisen.module.order.dto.CreateOrder;
 import com.eisen.module.order.exception.CreateOrderJsonException;
 import com.eisen.module.order.model.Order;
+import com.eisen.module.order.model.Order.Status;
 import com.eisen.module.person.model.Person;
 import com.eisen.module.person.service.LoggedPersonService;
 import com.eisen.module.product.model.Product;
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoClient;
@@ -75,9 +80,24 @@ public class OrderService {
         Order.PersonDocumentRepresentation oPerson = Order.PersonDocumentRepresentation.of(person);
         List<Order.ProductJsonRepresentation> oProducts = createRepresentationOfProducts(productSelections, products);
 
-        Order order = new Order(oPerson, oProducts);
+        Order order = new Order(oPerson, oProducts, Status.PENDING_CONFIRMATION);
+
+        order.setId(UUID.randomUUID().toString());
 
         return writeOrderToDatabase(order);
+    }
+
+    public Order updateStatus(String id, Status status) {
+        try {
+            System.out.println(id);
+            Order order = mongoWrapper.findInCollection(ORDERS_COLLECTION, "id", id, Order.class).get(0);
+            order.setStatus(status);
+            mongoWrapper.findAndReplaceTo(ORDERS_COLLECTION, "id", id, order);
+
+            return order;
+        } catch (JacksonException ex) {
+            throw new JsonInternalErrorException("Json internal server error");
+        }
     }
 
     public List<Order> all() {

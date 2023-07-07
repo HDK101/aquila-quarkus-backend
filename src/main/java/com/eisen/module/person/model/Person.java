@@ -61,7 +61,7 @@ public class Person extends PanacheEntity {
     public String passwordHash;
 
     @JoinTable(
-        name = "person_role", 
+        name = "person_role",
         joinColumns = { @JoinColumn(name = "person_id", nullable = false) }, 
         inverseJoinColumns = { @JoinColumn(name = "role_id", nullable = false) }
     )

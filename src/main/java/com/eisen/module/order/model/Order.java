@@ -2,8 +2,14 @@ package com.eisen.module.order.model;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.eisen.module.person.model.Person;
 import com.eisen.module.product.model.Product;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public class Order {
     public static class PersonDocumentRepresentation {
@@ -66,15 +72,25 @@ public class Order {
         }
     }
 
+    public enum Status {
+        PENDING_CONFIRMATION,
+        IN_PROGRESS,
+        DONE,
+        CANCELLED
+    }
+
+    private String id;
+    private Status status;
+
     private PersonDocumentRepresentation person;
     private List<ProductJsonRepresentation> products;
 
-    public Order() {
-    }
+    public Order() {}
 
-    public Order(PersonDocumentRepresentation person, List<ProductJsonRepresentation> products) {
+    public Order(PersonDocumentRepresentation person, List<ProductJsonRepresentation> products, Status status) {
         this.person = person;
         this.products = products;
+        this.status = status;
     }
 
     public PersonDocumentRepresentation getPerson() {
@@ -93,4 +109,19 @@ public class Order {
         this.products = products;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
