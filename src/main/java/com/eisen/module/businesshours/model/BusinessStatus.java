@@ -3,8 +3,10 @@ package com.eisen.module.businesshours.model;
 import java.util.Optional;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
 
+@Entity(name = "business_status")
 public class BusinessStatus extends PanacheEntity {
     private enum Status {
         CLOSED,
