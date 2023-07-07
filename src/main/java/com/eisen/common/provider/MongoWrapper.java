@@ -3,14 +3,18 @@ package com.eisen.common.provider;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.BsonWriter;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import static com.mongodb.client.model.Filters.eq;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -41,20 +45,49 @@ public class MongoWrapper {
         return document;
     }
 
-    public <T> List<T> collectionMapTo(String collection, Class<T> clazz) throws JsonMappingException, JsonProcessingException {
+    public <T> List<T> findInCollection(String collection, String field, Object value, Class<T> clazz)
+            throws JsonMappingException, JsonProcessingException {
+        MongoCursor<Document> cursor = mongoDatabase.getCollection(collection).find(eq(field, value)).iterator();
+
         List<T> listOfTs = new ArrayList<>();
-        MongoCursor<Document> cursor = mongoDatabase.getCollection(collection).find().iterator();
+
         try {
-            Document document = cursor.next();
-            
-            document.toJson();
-            
-            T t = mapper.readValue(document.toJson(), clazz);
-            listOfTs.add(t);
+            while (cursor.hasNext()) {
+                Document document = cursor.next();
+                listOfTs.add(documentMapTo(document, clazz));
+            }
         } finally {
             cursor.close();
         }
 
         return listOfTs;
+    }
+
+    public void findAndReplaceTo(String collection, String field, Object value, Object updateTo) throws JsonProcessingException {
+        mongoDatabase.getCollection(collection).replaceOne(eq(field, value), Document.parse(mapper.writeValueAsString(updateTo)));
+    }
+
+    public <T> List<T> collectionMapTo(String collection, Class<T> clazz)
+            throws JsonMappingException, JsonProcessingException {
+        List<T> listOfTs = new ArrayList<>();
+        MongoCursor<Document> cursor = mongoDatabase.getCollection(collection).find().iterator();
+        try {
+            while (cursor.hasNext()) {
+                Document document = cursor.next();
+
+                listOfTs.add(documentMapTo(document, clazz));
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return listOfTs;
+    }
+
+    private <T> T documentMapTo(Document document, Class<T> clazz)
+            throws JsonMappingException, JsonProcessingException {
+        T t = mapper.readValue(document.toJson(), clazz);
+
+        return t;
     }
 }
