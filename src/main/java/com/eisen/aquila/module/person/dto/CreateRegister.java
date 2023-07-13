@@ -12,6 +12,7 @@ public class CreateRegister {
     @NotNull
     public String name;
     @Email
+    @NotNull
     public String email;
     @NotNull
     @Length(min = 6, max = 32)
