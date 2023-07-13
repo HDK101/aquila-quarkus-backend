@@ -4,8 +4,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.eclipse.microprofile.jwt.Claims;
-
 import io.smallrye.jwt.build.Jwt;
 
 public class GenerateToken {
