@@ -8,6 +8,8 @@ import com.eisen.aquila.module.person.dto.CreateRegister;
 import com.eisen.aquila.module.person.model.Person;
 import com.eisen.aquila.module.person.model.Role;
 
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -35,22 +37,23 @@ public class PersonRegister {
         responseCode = "400",
         description = "Invalid body"
     )
-    public Response store(@Valid CreateRegister createRegister) {
-        Person person = new Person();
+    public Uni<Response> store(@Valid CreateRegister createRegister) {
+        Uni<Person> uniPerson = Uni.createFrom().item(() -> new Person()).onItem().transform(p -> {
+            return p.name(createRegister.name)
+            .login(createRegister.email)
+            .email(createRegister.email)
+            .birth(createRegister.birth)
+            .password(createRegister.password)
+            .phone(createRegister.phone);
+        }).onItem().invoke(p -> {
+            Role role = Role.findRoleByNameId(clientNameId);
+            p.roles(new HashSet<Role>(List.of(role)));
+        }).onItem().invoke(p -> {
+            p.persistAndFlush();
+        });
 
-        Role role = Role.findRoleByNameId(clientNameId);
-
-        person
-        .name(createRegister.name)
-        .login(createRegister.email)
-        .email(createRegister.email)
-        .birth(createRegister.birth)
-        .password(createRegister.password)
-        .phone(createRegister.phone)
-        .roles(new HashSet<Role>(List.of(role)));
-
-        person.persistAndFlush();
-
-        return Response.status(201).build();
+        return uniPerson.onItem().transform(p -> {
+            return Response.status(201).build();
+        });
     }
 }
