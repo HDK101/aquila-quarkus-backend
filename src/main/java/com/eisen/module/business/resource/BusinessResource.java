@@ -1,6 +1,6 @@
-package com.eisen.module.businesshours.resource;
+package com.eisen.module.business.resource;
 
-import com.eisen.module.businesshours.model.BusinessStatus;
+import com.eisen.module.business.model.BusinessStatus;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;

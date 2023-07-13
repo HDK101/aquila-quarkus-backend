@@ -1,4 +1,4 @@
-package com.eisen.module.businesshours.model;
+package com.eisen.module.business.model;
 
 import java.util.Optional;
 
