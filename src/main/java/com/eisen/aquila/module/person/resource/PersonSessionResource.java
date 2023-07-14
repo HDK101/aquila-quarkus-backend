@@ -52,7 +52,6 @@ public class PersonSessionResource {
         String token = Jwt.issuer(issuer)
         .expiresIn(maxDuration)
         .upn(createSession.login)
-        .groups(new HashSet<>(List.of("refresh")))
         .claim("sessionId", session.id)
         .claim("personId", person.id)
         .claim("refresh", true)

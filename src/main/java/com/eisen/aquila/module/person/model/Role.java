@@ -1,5 +1,6 @@
 package com.eisen.aquila.module.person.model;
 
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,5 +27,9 @@ public class Role extends PanacheEntity {
 
     public static Role findRoleByNameId(String nameId) {
         return find("nameId", nameId).firstResult();
+    }
+
+    public static Optional<Role> findRoleByNameIdOptional(String nameId) {
+        return Optional.ofNullable(find("nameId", nameId).firstResult());
     }
 }
