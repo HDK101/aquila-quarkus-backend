@@ -1,9 +1,15 @@
 package com.eisen.aquila.module.person.response;
 
 public class CreateSessionResponse {
-    public String token;
+    public String refreshToken;
+    public String accessToken;
 
-    public CreateSessionResponse(String token) {
-        this.token = token;
+    public CreateSessionResponse refreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+        return this;
+    }
+    public CreateSessionResponse accessToken(String accessToken) {
+        this.accessToken = accessToken;
+        return this;
     }
 }

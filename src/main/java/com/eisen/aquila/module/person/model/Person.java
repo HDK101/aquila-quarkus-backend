@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.eisen.aquila.module.person.exception.WrongPersonCredentialsException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -109,6 +110,18 @@ public class Person extends PanacheEntity {
     public static Optional<Person> findByLogin(String login) {
         return Optional.ofNullable(
                 find("login", login).firstResult());
+    }
+
+    public static Person findAndcheckCredentials(String login, String password) {
+        Person person = Person.findByLogin(login).orElseThrow(() -> { 
+            throw new WrongPersonCredentialsException(400, "Credenciais incorretas");
+        });
+
+        if (!BcryptUtil.matches(password, person.passwordHash)) {
+            throw new WrongPersonCredentialsException(400, "Credenciais incorretas");
+        };
+
+        return person;
     }
 
     public Person name(String name) {

@@ -41,4 +41,10 @@ public class Session extends PanacheEntity{
     public static Long destroyAllByPersonId(Long personId) {
         return delete("person.id = ?1", personId);
     }
+
+    public static Session createFor(Person person) {
+        Session session = new Session(person);
+        session.persist();
+        return session;
+    }
 }
