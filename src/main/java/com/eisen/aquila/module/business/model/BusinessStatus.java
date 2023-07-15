@@ -1,8 +1,10 @@
 package com.eisen.aquila.module.business.model;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,6 +16,7 @@ public class BusinessStatus extends PanacheEntity {
     }
 
     @NotNull
+    @Column(name = "status", nullable = false)
     private Status status;
 
     public BusinessStatus() {
@@ -34,6 +37,7 @@ public class BusinessStatus extends PanacheEntity {
         if (optionalBusinessStatus.isPresent()) {
             var businessStatus = optionalBusinessStatus.get();
             businessStatus.status(status).persist();
+            return businessStatus;
         }
 
         persist();
