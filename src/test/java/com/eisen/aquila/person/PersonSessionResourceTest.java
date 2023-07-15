@@ -41,17 +41,18 @@ public class PersonSessionResourceTest {
     @Transactional
     void test_create_token_by_credentials() {
         JsonObject jsonObject = new JsonObject()
-            .put("login", "admin@admin.com")
-            .put("password", "admin")
-            .put("type", "USER_CREDENTIALS");
-        var extractableResponse = given()
-        .header("Content-Type", "application/json")
-        .body(jsonObject.toString()).when().post("/persons/token").then().statusCode(201).extract();
+                .put("login", "admin@admin.com")
+                .put("password", "admin")
+                .put("type", "USER_CREDENTIALS");
 
-        String body =  extractableResponse.body().asString();
+        var extractableResponse = given()
+                .header("Content-Type", "application/json")
+                .body(jsonObject.toString()).when().post("/persons/token").then().statusCode(201).extract();
+
+        String body = extractableResponse.body().asString();
 
         JsonObject bodyObject = new JsonObject(body);
-    
+
         assertNotNull(bodyObject.getString("accessToken"));
         assertNotNull(bodyObject.getString("refreshToken"));
     }
