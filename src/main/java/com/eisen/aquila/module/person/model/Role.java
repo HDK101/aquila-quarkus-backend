@@ -18,11 +18,7 @@ import jakarta.persistence.Table;
 
 @Entity(name = "roles")
 @Table(name = "roles")
-public class Role extends PanacheEntityBase {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
-
+public class Role extends PanacheEntity {
     @Column(name = "name_display", nullable = false, unique = true)
     public String nameDisplay;
 
