@@ -39,16 +39,20 @@ public class PersonSessionResourceTest {
 
     @Test
     @Transactional
-    void test_list_roles() {
-        JsonObject jsonObject = new JsonObject().put("login", "admin@admin.com").put("password", "admin");
+    void test_create_token_by_credentials() {
+        JsonObject jsonObject = new JsonObject()
+            .put("login", "admin@admin.com")
+            .put("password", "admin")
+            .put("type", "USER_CREDENTIALS");
         var extractableResponse = given()
         .header("Content-Type", "application/json")
-        .body(jsonObject.toString()).when().post("/persons/sessions").then().statusCode(201).extract();
+        .body(jsonObject.toString()).when().post("/persons/token").then().statusCode(201).extract();
 
         String body =  extractableResponse.body().asString();
 
         JsonObject bodyObject = new JsonObject(body);
     
-        assertNotNull(bodyObject.getString("token"));
+        assertNotNull(bodyObject.getString("accessToken"));
+        assertNotNull(bodyObject.getString("refreshToken"));
     }
 }
