@@ -23,6 +23,8 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @ApplicationScoped
 @Path("/persons/sessions")
@@ -36,7 +38,7 @@ public class PersonSessionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public CreateSessionResponse store(@Valid CreateSession createSession) {
+    public Response store(@Valid CreateSession createSession) {
         Person person = Person.findByEmail(createSession.login).orElseThrow(() -> { 
             throw new WrongPersonCredentialsException(400, "Credenciais incorretas");
         });
@@ -57,6 +59,6 @@ public class PersonSessionResource {
         .claim("refresh", true)
         .sign();
 
-        return new CreateSessionResponse(token);
+        return Response.status(Status.CREATED).entity(new CreateSessionResponse(token)).build();
     }
 }
