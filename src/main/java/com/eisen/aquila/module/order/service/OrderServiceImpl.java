@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.eisen.aquila.common.exception.JsonInternalErrorException;
-import com.eisen.aquila.common.provider.MongoWrapper;
+import com.eisen.aquila.common.provider.MongoWrapperImpl;
 import com.eisen.aquila.module.order.dto.CreateOrder;
 import com.eisen.aquila.module.order.exception.CreateOrderJsonException;
 import com.eisen.aquila.module.order.model.Order;
@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private static final String ORDERS_COLLECTION = "orders";
 
     @Inject
-    MongoWrapper mongoWrapper;
+    MongoWrapperImpl mongoWrapper;
 
     @Inject
     ObjectMapper mapper;

@@ -3,7 +3,7 @@ package com.eisen.aquila.module.client.resource;
 import java.util.List;
 
 import com.eisen.aquila.common.exception.JsonInternalErrorException;
-import com.eisen.aquila.common.provider.MongoWrapper;
+import com.eisen.aquila.common.provider.MongoWrapperImpl;
 import com.eisen.aquila.module.order.dto.CreateOrder;
 import com.eisen.aquila.module.order.model.Order;
 import com.eisen.aquila.module.order.service.OrderService;
@@ -26,7 +26,7 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/clients/orders")
 @RolesAllowed({ "client" })
 public class ClientOrderResource {
-    @Inject MongoWrapper mongoWrapper;
+    @Inject MongoWrapperImpl mongoWrapper;
 
     @Inject LoggedPersonService loggedPersonService;
 
