@@ -7,4 +7,9 @@ public class DomainException extends RuntimeException {
         super(errorMessage);
         this.statusCode = statusCode;
     }
+
+    public DomainException(Integer statusCode, String errorMessage, Throwable throwable) {
+        super(errorMessage, throwable);
+        this.statusCode = statusCode;
+    }
 }
