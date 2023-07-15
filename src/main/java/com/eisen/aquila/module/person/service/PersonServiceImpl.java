@@ -5,7 +5,6 @@ import java.time.Duration;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import com.eisen.aquila.common.exception.DomainException;
 import com.eisen.aquila.module.person.dto.CreateToken;
 import com.eisen.aquila.module.person.exception.PersonTokenParseException;
 import com.eisen.aquila.module.person.model.Person;

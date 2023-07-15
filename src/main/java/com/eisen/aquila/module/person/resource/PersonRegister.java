@@ -9,7 +9,6 @@ import com.eisen.aquila.module.person.model.Person;
 import com.eisen.aquila.module.person.model.Role;
 
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.infrastructure.Infrastructure;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
