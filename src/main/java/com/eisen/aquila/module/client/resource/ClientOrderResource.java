@@ -50,6 +50,6 @@ public class ClientOrderResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Order store(@Valid CreateOrder createOrderBody) {
-        return orderService.create(createOrderBody.getProductIds());
+        return orderService.create(createOrderBody);
     }
 }
