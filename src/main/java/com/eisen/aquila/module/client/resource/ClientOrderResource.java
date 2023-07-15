@@ -49,7 +49,7 @@ public class ClientOrderResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Document store(@Valid CreateOrder createOrderBody) {
-        return orderService.create(createOrderBody.productIds);
+    public Order store(@Valid CreateOrder createOrderBody) {
+        return orderService.create(createOrderBody.getProductIds());
     }
 }
