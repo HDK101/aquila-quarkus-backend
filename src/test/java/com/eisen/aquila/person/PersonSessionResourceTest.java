@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import com.eisen.aquila.module.person.model.Person;
 import com.eisen.aquila.module.person.model.Role;
+import com.eisen.aquila.person.admin.CreateDefault;
+import com.eisen.aquila.person.admin.CreateTokenByCredentials;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static io.restassured.RestAssured.given;
@@ -21,6 +23,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
@@ -31,29 +34,45 @@ public class PersonSessionResourceTest {
     @Inject
     ObjectMapper objectMapper;
 
+    private final String WRONG_ADMIN_LOGIN = "adminn@admin.com";
+    private final String WRONG_ADMIN_PASSWORD = "adminn";
+
     @BeforeAll
     @Transactional
     static void beforeEach() {
-        CreateDefaultAdmin.create();
+        CreateDefault.create();
     }
 
     @Test
     @Transactional
     void test_create_token_by_credentials() {
-        JsonObject jsonObject = new JsonObject()
-                .put("login", "admin@admin.com")
-                .put("password", "admin")
-                .put("type", "USER_CREDENTIALS");
-
-        var extractableResponse = given()
-                .header("Content-Type", "application/json")
-                .body(jsonObject.toString()).when().post("/persons/token").then().statusCode(201).extract();
-
-        String body = extractableResponse.body().asString();
-
-        JsonObject bodyObject = new JsonObject(body);
+        JsonObject bodyObject = CreateTokenByCredentials.create(CreateDefault.ADMIN_EMAIL, CreateDefault.ADMIN_PASSWORD);
 
         assertNotNull(bodyObject.getString("accessToken"));
         assertNotNull(bodyObject.getString("refreshToken"));
+    }
+
+    @Test
+    @Transactional
+    void test_try_to_create_token_with_invalid_login() {
+        CreateTokenByCredentials.givenCredentialsWhenCreateToken(WRONG_ADMIN_LOGIN, CreateDefault.ADMIN_PASSWORD)
+            .then()
+            .statusCode(400);
+    }
+
+    @Test
+    @Transactional
+    void test_try_to_create_token_with_invalid_password() {
+        CreateTokenByCredentials.givenCredentialsWhenCreateToken(CreateDefault.ADMIN_EMAIL, WRONG_ADMIN_PASSWORD)
+            .then()
+            .statusCode(400);
+    }
+
+    @Test
+    @Transactional
+    void test_try_to_create_token_with_invalid_credentials() {
+        CreateTokenByCredentials.givenCredentialsWhenCreateToken(WRONG_ADMIN_LOGIN, WRONG_ADMIN_PASSWORD)
+            .then()
+            .statusCode(400);
     }
 }

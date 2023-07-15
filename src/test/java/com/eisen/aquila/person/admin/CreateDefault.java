@@ -1,4 +1,4 @@
-package com.eisen.aquila.person;
+package com.eisen.aquila.person.admin;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -9,9 +9,25 @@ import com.eisen.aquila.module.person.model.Role;
 
 import jakarta.transaction.Transactional;
 
-public class CreateDefaultAdmin {
+public class CreateDefault {
     public static final String ADMIN_EMAIL = "admin@admin.com";
     public static final String ADMIN_PASSWORD = "admin";
+
+    @Transactional
+    public static void create() {
+        List<Role> roles = createRoles();
+
+        Person person = new Person();
+        person
+                .name("Admin")
+                .login(ADMIN_EMAIL)
+                .email(ADMIN_EMAIL)
+                .password(ADMIN_PASSWORD)
+                .birth(LocalDate.now())
+                .phone("18999999999")
+                .roles(new HashSet<Role>(roles))
+                .persist();
+    }
 
     @Transactional
     private static List<Role> createRoles() {
@@ -37,21 +53,5 @@ public class CreateDefaultAdmin {
         superAdminRole.persist();
 
         return List.of(userRole, clientRole, adminRole, superAdminRole);
-    }
-
-    @Transactional
-    public static void create() {
-        List<Role> roles = createRoles();
-
-        Person person = new Person();
-        person
-                .name("Admin")
-                .login(ADMIN_EMAIL)
-                .email(ADMIN_EMAIL)
-                .password(ADMIN_PASSWORD)
-                .birth(LocalDate.now())
-                .phone("18999999999")
-                .roles(new HashSet<Role>(roles))
-                .persist();
     }
 }
