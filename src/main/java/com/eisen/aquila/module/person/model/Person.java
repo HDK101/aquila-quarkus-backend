@@ -78,7 +78,6 @@ public class Person extends PanacheEntity {
     
     @Override
     public void persist() {
-        System.out.println("hashing password lol");
         hashPassword();
         super.persist();
     }
@@ -87,7 +86,6 @@ public class Person extends PanacheEntity {
 
     @Override
     public void persistAndFlush() {
-        System.out.println("hashing password lol flush");
         hashPassword();
         super.persistAndFlush();
     }
